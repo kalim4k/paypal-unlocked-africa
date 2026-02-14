@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
 
 const Pricing: React.FC = () => {
@@ -40,9 +41,9 @@ const Pricing: React.FC = () => {
                 ))}
               </div>
 
-              <button className="w-full bg-brand-600 text-primary-foreground text-lg font-bold py-4 rounded-xl hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-500/25 transition-all transform hover:-translate-y-1 flex justify-center items-center">
+              <Link to="/confirm" className="w-full bg-brand-600 text-primary-foreground text-lg font-bold py-4 rounded-xl hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-500/25 transition-all transform hover:-translate-y-1 flex justify-center items-center">
                 Je veux mon compte vérifié maintenant
-              </button>
+              </Link>
 
               <p className="text-center text-xs text-muted-foreground mt-4">
                 Paiement sécurisé par Mobile Money & Carte Bancaire. <br />
