@@ -29,7 +29,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        productDocumentId: "550e8400-e29b-41d4-a716-446655440000",
+        productDocumentId: "b8d0b5e9-625f-43e8-a182-4f5de9ed258d",
         email,
         firstName,
         lastName,
