@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 
 const Hero: React.FC = () => {
@@ -24,13 +25,13 @@ const Hero: React.FC = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <a
-                href="#pricing"
+              <Link
+                to="/confirm"
                 className="inline-flex justify-center items-center px-8 py-4 text-base font-bold text-primary-foreground bg-brand-600 rounded-full hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 hover:-translate-y-1"
               >
                 Accéder à la formation
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              </Link>
               <a
                 href="#programme"
                 className="inline-flex justify-center items-center px-8 py-4 text-base font-semibold text-foreground bg-background border border-border rounded-full hover:bg-secondary transition-all hover:-translate-y-1"
