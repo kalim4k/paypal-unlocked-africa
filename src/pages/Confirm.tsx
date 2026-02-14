@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, ArrowLeft, Loader2 } from 'lucide-react';
+import { ShieldCheck, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Confirm: React.FC = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,10 +43,9 @@ const Confirm: React.FC = () => {
         </div>
 
         <h1 className="text-2xl font-bold text-foreground mb-3">Confirmation de paiement</h1>
-        <p className="text-muted-foreground mb-2">
-          Vous êtes sur le point de passer au paiement pour la formation <strong className="text-foreground">PayPalPro Afrique</strong>.
+        <p className="text-muted-foreground mb-8">
+          Vous êtes sur le point de passer au paiement. Souhaitez-vous continuer ?
         </p>
-        <p className="text-muted-foreground mb-8">Souhaitez-vous continuer ?</p>
 
         <div className="flex items-end gap-4 justify-center mb-8">
           <span className="text-4xl font-extrabold text-foreground">2.500 <span className="text-lg font-bold text-muted-foreground">FCFA</span></span>
@@ -67,14 +64,6 @@ const Confirm: React.FC = () => {
         >
           {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
           {loading ? 'Redirection...' : 'CONTINUER'}
-        </button>
-
-        <button
-          onClick={() => navigate('/')}
-          className="mt-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft size={16} className="mr-1" />
-          Retour
         </button>
       </div>
     </div>
