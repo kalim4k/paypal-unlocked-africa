@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, firstName, lastName, phone } = await req.json();
+    const { email, firstName, lastName, phone, customerPrice } = await req.json();
 
     const MAKETOU_API_KEY = Deno.env.get('MAKETOU_API_KEY');
     if (!MAKETOU_API_KEY) {
@@ -34,6 +34,7 @@ serve(async (req) => {
         firstName,
         lastName,
         phone: phone || undefined,
+        customerPrice: customerPrice || 2500,
         redirectURL,
       }),
     });
