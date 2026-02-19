@@ -9,7 +9,7 @@ serve(async (req) => {
   if (!token) {
     return new Response(null, {
       status: 302,
-      headers: { 'Location': `${frontendBase}/success` },
+      headers: { 'Location': `${frontendBase}/congrats` },
     });
   }
 
@@ -20,7 +20,7 @@ serve(async (req) => {
     if (statusData.statut && statusData.data?.statut === 'paid') {
       return new Response(null, {
         status: 302,
-        headers: { 'Location': `${frontendBase}/success` },
+      headers: { 'Location': `${frontendBase}/congrats` },
       });
     }
 
@@ -31,7 +31,7 @@ serve(async (req) => {
   } catch {
     return new Response(null, {
       status: 302,
-      headers: { 'Location': `${frontendBase}/success` },
+      headers: { 'Location': `${frontendBase}/congrats` },
     });
   }
 });
