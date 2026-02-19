@@ -11,44 +11,42 @@ serve(async (req) => {
   }
 
   try {
-    const { email, firstName, lastName, phone, customerPrice } = await req.json();
+    const { name, phone } = await req.json();
 
-    const MAKETOU_API_KEY = Deno.env.get('MAKETOU_API_KEY');
-    if (!MAKETOU_API_KEY) {
-      throw new Error('MAKETOU_API_KEY not configured');
+    const MONEYFUSION_API_URL = Deno.env.get('MONEYFUSION_API_URL');
+    if (!MONEYFUSION_API_URL) {
+      throw new Error('MONEYFUSION_API_URL not configured');
     }
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
     const projectId = SUPABASE_URL.replace('https://', '').split('.')[0];
-    const redirectURL = `https://${projectId}.supabase.co/functions/v1/payment-callback`;
+    const return_url = `https://${projectId}.supabase.co/functions/v1/payment-callback`;
 
-    const response = await fetch('https://api.maketou.net/api/v1/stores/cart/checkout', {
+    const response = await fetch(MONEYFUSION_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${MAKETOU_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        productDocumentId: "b8d0b5e9-625f-43e8-a182-4f5de9ed258d",
-        email,
-        firstName,
-        lastName,
-        phone: phone || undefined,
-        customerPrice: customerPrice || 2500,
-        redirectURL,
+        totalPrice: 2500,
+        article: [{ "Abonnement": 2500 }],
+        personal_Info: [{ orderId: "paypal-ebook" }],
+        numeroSend: phone,
+        nomclient: name,
+        return_url,
       }),
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (!response.ok || !data.statut) {
       return new Response(JSON.stringify({ error: data.message || 'Payment initiation failed' }), {
         status: response.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    return new Response(JSON.stringify({ redirectUrl: data.redirectUrl, cartId: data.cart?.id }), {
+    return new Response(JSON.stringify({ redirectUrl: data.url, token: data.token }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

@@ -2,16 +2,36 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 serve(async (req) => {
   const url = new URL(req.url);
-  const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
-  const projectId = SUPABASE_URL.replace('https://', '').split('.')[0];
-  
-  // Redirect to the success page on the frontend
-  const frontendUrl = `https://paypal-unlocked-africa.lovable.app/success`;
+  const token = url.searchParams.get('token');
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      'Location': frontendUrl,
-    },
-  });
+  const frontendBase = 'https://paypal-unlocked-africa.lovable.app';
+
+  if (!token) {
+    return new Response(null, {
+      status: 302,
+      headers: { 'Location': `${frontendBase}/success` },
+    });
+  }
+
+  try {
+    const statusRes = await fetch(`https://www.pay.moneyfusion.net/paiementNotif/${token}`);
+    const statusData = await statusRes.json();
+
+    if (statusData.statut && statusData.data?.statut === 'paid') {
+      return new Response(null, {
+        status: 302,
+        headers: { 'Location': `${frontendBase}/success` },
+      });
+    }
+
+    return new Response(null, {
+      status: 302,
+      headers: { 'Location': `${frontendBase}/confirm?error=payment_failed` },
+    });
+  } catch {
+    return new Response(null, {
+      status: 302,
+      headers: { 'Location': `${frontendBase}/success` },
+    });
+  }
 });
