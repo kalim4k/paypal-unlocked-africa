@@ -11,47 +11,48 @@ serve(async (req) => {
   }
 
   try {
-    const { name, phone } = await req.json();
+    const { email, firstName, lastName, customerPrice } = await req.json().catch(() => ({}));
 
-    const MONEYFUSION_API_URL = Deno.env.get('MONEYFUSION_API_URL');
-    if (!MONEYFUSION_API_URL) {
-      throw new Error('MONEYFUSION_API_URL not configured');
+    const MAKETOU_API_KEY = Deno.env.get('MAKETOU_API_KEY');
+    if (!MAKETOU_API_KEY) {
+      throw new Error('MAKETOU_API_KEY not configured');
     }
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
     const projectId = SUPABASE_URL.replace('https://', '').split('.')[0];
-    const return_url = `https://${projectId}.supabase.co/functions/v1/payment-callback`;
+    const redirectURL = `https://${projectId}.supabase.co/functions/v1/payment-callback`;
 
-    const response = await fetch(MONEYFUSION_API_URL, {
+    const response = await fetch('https://api.maketou.com/api/v1/stores/cart/checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${MAKETOU_API_KEY}`,
       },
       body: JSON.stringify({
-        totalPrice: 2500,
-        article: [{ "Abonnement": 2500 }],
-        personal_Info: [{ orderId: "paypal-ebook" }],
-        numeroSend: phone,
-        nomclient: name,
-        return_url,
+        productDocumentId: "b8d0b5e9-625f-43e8-a182-4f5de9ed258d",
+        email: email || 'client@example.com',
+        firstName: firstName || 'Client',
+        lastName: lastName || 'PayPal',
+        customerPrice: customerPrice || 2500,
+        redirectURL,
       }),
     });
 
     const data = await response.json();
 
-    if (!response.ok || !data.statut) {
-      return new Response(JSON.stringify({ error: data.message || 'Payment initiation failed' }), {
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: data?.error || data?.message || 'Payment initiation failed' }), {
         status: response.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    return new Response(JSON.stringify({ redirectUrl: data.url, token: data.token }), {
+    return new Response(JSON.stringify({ redirectUrl: data.redirectUrl || data.url }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
