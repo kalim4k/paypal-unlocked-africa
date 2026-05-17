@@ -22,7 +22,7 @@ serve(async (req) => {
     const projectId = SUPABASE_URL.replace('https://', '').split('.')[0];
     const redirectURL = `https://${projectId}.supabase.co/functions/v1/payment-callback`;
 
-    const response = await fetch('https://api.maketou.com/api/v1/stores/cart/checkout', {
+    const response = await fetch('https://app.maketou.com/api/v1/stores/cart/checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
