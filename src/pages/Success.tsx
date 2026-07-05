@@ -1,7 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircle, Bookmark } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+declare global { interface Window { fbq?: (...args: unknown[]) => void } }
+
+function getCookie(name: string): string | undefined {
+  const m = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]+)'));
+  return m ? decodeURIComponent(m[2]) : undefined;
+}
 
 const Success: React.FC = () => {
+  useEffect(() => {
+    const event_id = `purchase_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    const value = 2500;
+    const currency = 'XOF';
+    try {
+      window.fbq?.('track', 'Purchase', { value, currency }, { eventID: event_id });
+    } catch { /* noop */ }
+    supabase.functions.invoke('fb-capi', {
+      body: {
+        event_name: 'Purchase',
+        event_id,
+        event_source_url: window.location.href,
+        value,
+        currency,
+        fbp: getCookie('_fbp'),
+        fbc: getCookie('_fbc'),
+      },
+    }).catch(() => { /* noop */ });
+  }, []);
+
   return (
     <div className="min-h-screen bg-secondary flex items-center justify-center px-4">
       <div className="max-w-lg w-full bg-background rounded-2xl shadow-xl border border-border p-8 text-center">
