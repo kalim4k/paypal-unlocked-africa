@@ -60,6 +60,15 @@ const Success: React.FC = () => {
           Votre accès à l'espace membre est désormais activé.
         </p>
 
+        <a
+          href="https://ysbiedwkakdqadxtuwab.supabase.co/storage/v1/object/public/uploads/4e8f1e8e-647f-4f41-b154-b6f1046e50dd.pdf"
+          download
+          className="inline-flex items-center justify-center gap-2 w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-6 rounded-xl transition mb-6"
+        >
+          <Download size={20} />
+          Télécharger votre PDF exclusif
+        </a>
+
         <div className="text-left bg-muted/50 rounded-xl p-5 mb-6 space-y-2">
           <p className="font-semibold text-foreground mb-3">En rejoignant cette communauté, vous bénéficiez de :</p>
           <ul className="space-y-2 text-sm text-muted-foreground">
