@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { CheckCircle, Bookmark } from 'lucide-react';
+import { CheckCircle, Bookmark, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 declare global { interface Window { fbq?: (...args: unknown[]) => void } }
