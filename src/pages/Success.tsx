@@ -11,12 +11,28 @@ function getCookie(name: string): string | undefined {
 
 const Success: React.FC = () => {
   useEffect(() => {
-    const event_id = `purchase_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
     const value = 2500;
     const currency = 'XOF';
+
+    // 1) Stable event_id: from ?eid= (set by payment-callback for the real transaction).
+    //    Fallback: reuse/create a per-tab id so reloads don't invent a new one.
+    const params = new URLSearchParams(window.location.search);
+    let event_id = params.get('eid') || '';
+    if (!event_id) {
+      const KEY = 'fb_purchase_eid_fallback';
+      event_id = sessionStorage.getItem(KEY) || `pu_${crypto.randomUUID()}`;
+      sessionStorage.setItem(KEY, event_id);
+    }
+
+    // 2) Fire at most once per event_id (across reloads).
+    const firedKey = `fb_purchase_fired_${event_id}`;
+    if (localStorage.getItem(firedKey)) return;
+    localStorage.setItem(firedKey, '1');
+
     try {
       window.fbq?.('track', 'Purchase', { value, currency }, { eventID: event_id });
     } catch { /* noop */ }
+
     supabase.functions.invoke('fb-capi', {
       body: {
         event_name: 'Purchase',
