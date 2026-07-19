@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 serve(async (req) => {
   const frontendBase = 'https://paypal-unlocked-africa.lovable.app';
   const url = new URL(req.url);
-  const token = url.searchParams.get('token') || url.searchParams.get('tokenPay') || '';
+  const token = url.searchParams.get('token') || '';
 
   let paid = false;
   if (token) {
@@ -20,5 +20,5 @@ serve(async (req) => {
     ? `${frontendBase}/congrats?eid=${encodeURIComponent(eid)}`
     : `${frontendBase}/confirm?error=payment_failed`;
 
-  return new Response(null, { status: 302, headers: { Location: target } });
+  return new Response(null, { status: 302, headers: { 'Location': target } });
 });

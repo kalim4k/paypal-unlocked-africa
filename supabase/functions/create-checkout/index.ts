@@ -35,10 +35,12 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
+    const raw = await response.text();
+    let data: any = {};
+    try { data = JSON.parse(raw); } catch { /* not JSON */ }
 
     if (!response.ok || !data?.url) {
-      return new Response(JSON.stringify({ error: data?.message || 'Payment initiation failed' }), {
+      return new Response(JSON.stringify({ error: data?.message || raw.slice(0, 200) || 'Payment initiation failed' }), {
         status: response.status || 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
