@@ -13,10 +13,12 @@ serve(async (req) => {
   try {
     const { name, phone } = await req.json().catch(() => ({}));
 
-    const MONEYFUSION_API_URL = Deno.env.get('MONEYFUSION_API_URL');
-    if (!MONEYFUSION_API_URL) {
+    const rawUrl = Deno.env.get('MONEYFUSION_API_URL');
+    if (!rawUrl) {
       throw new Error('MONEYFUSION_API_URL not configured');
     }
+    // Fix SSL: cert only covers pay.moneyfusion.net, not www.pay.moneyfusion.net
+    const MONEYFUSION_API_URL = rawUrl.replace('://www.pay.moneyfusion.net', '://pay.moneyfusion.net');
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
     const projectId = SUPABASE_URL.replace('https://', '').split('.')[0];
