@@ -8,7 +8,7 @@ serve(async (req) => {
   let paid = false;
   if (token) {
     try {
-      const res = await fetch(`https://www.pay.moneyfusion.net/paiementNotif/${token}`);
+      const res = await fetch(`https://pay.moneyfusion.net/paiementNotif/${token}`);
       const json = await res.json();
       const statut = json?.data?.statut || json?.statut;
       paid = statut === 'paid';

@@ -14,7 +14,7 @@ const Confirm: React.FC = () => {
       const { data, error: fnError } = await supabase.functions.invoke('create-checkout', {
         body: {
           name: 'Client PayPal',
-          phone: '',
+          phone: '01010101',
         },
       });
 

@@ -23,6 +23,8 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
     const projectId = SUPABASE_URL.replace('https://', '').split('.')[0];
     const return_url = `https://${projectId}.supabase.co/functions/v1/payment-callback`;
+    const customerPhone = String(phone || '').trim() || '01010101';
+    const customerName = String(name || '').trim() || 'Client PayPal';
 
     const response = await fetch(MONEYFUSION_API_URL, {
       method: 'POST',
@@ -31,8 +33,8 @@ serve(async (req) => {
         totalPrice: 2500,
         article: [{ Abonnement: 2500 }],
         personal_Info: [{ orderId: 'paypal-ebook' }],
-        numeroSend: phone || '',
-        nomclient: name || 'Client',
+        numeroSend: customerPhone,
+        nomclient: customerName,
         return_url,
       }),
     });
@@ -41,9 +43,9 @@ serve(async (req) => {
     let data: any = {};
     try { data = JSON.parse(raw); } catch { /* not JSON */ }
 
-    if (!response.ok || !data?.url) {
+    if (!response.ok || !data?.statut || !data?.url) {
       return new Response(JSON.stringify({ error: data?.message || raw.slice(0, 200) || 'Payment initiation failed' }), {
-        status: response.status || 500,
+        status: response.ok ? 502 : response.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
