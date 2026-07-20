@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { CheckCircle, Bookmark, Download } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Check, Download, Copy, AlertTriangle, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 declare global { interface Window { fbq?: (...args: unknown[]) => void } }
@@ -9,13 +10,17 @@ function getCookie(name: string): string | undefined {
   return m ? decodeURIComponent(m[2]) : undefined;
 }
 
+const PDF_URL = 'https://ysbiedwkakdqadxtuwab.supabase.co/storage/v1/object/public/uploads/4e8f1e8e-647f-4f41-b154-b6f1046e50dd.pdf';
+
 const Success: React.FC = () => {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     const value = 2500;
     const currency = 'XOF';
 
-    // 1) Stable event_id: from ?eid= (set by payment-callback for the real transaction).
-    //    Fallback: reuse/create a per-tab id so reloads don't invent a new one.
+    // Stable event_id: from ?eid= (set by payment-callback for the real transaction).
+    // Fallback: reuse/create a per-tab id so reloads don't invent a new one.
     const params = new URLSearchParams(window.location.search);
     let event_id = params.get('eid') || '';
     if (!event_id) {
@@ -24,7 +29,7 @@ const Success: React.FC = () => {
       sessionStorage.setItem(KEY, event_id);
     }
 
-    // 2) Fire at most once per event_id (across reloads).
+    // Fire at most once per event_id (across reloads).
     const firedKey = `fb_purchase_fired_${event_id}`;
     if (localStorage.getItem(firedKey)) return;
     localStorage.setItem(firedKey, '1');
@@ -46,108 +51,73 @@ const Success: React.FC = () => {
     }).catch(() => { /* noop */ });
   }, []);
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(PDF_URL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* noop */ }
+  };
+
   return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center px-4">
-      <div className="max-w-lg w-full bg-background rounded-2xl shadow-xl border border-border p-8 text-center">
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md bg-[#141414] border border-[#222] rounded-[2rem] p-8 text-center shadow-2xl">
         <div className="flex justify-center mb-6">
-          <div className="bg-green-500 text-white p-3 rounded-full">
-            <CheckCircle size={40} />
+          <div className="w-20 h-20 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center">
+            <Check className="w-10 h-10 text-[#c9a227]" strokeWidth={3} />
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-foreground mb-3">Merci pour votre inscription !</h1>
-        <p className="text-muted-foreground mb-6">
-          Votre accès à l'espace membre est désormais activé.
+        <h1 className="text-3xl font-bold text-[#c9a227] mb-3">
+          Merci pour votre achat !
+        </h1>
+        <p className="text-[#9ca3af] mb-8 leading-relaxed">
+          Votre paiement a été validé avec succès. Votre guide est prêt à être téléchargé.
         </p>
 
         <a
-          href="https://ysbiedwkakdqadxtuwab.supabase.co/storage/v1/object/public/uploads/4e8f1e8e-647f-4f41-b154-b6f1046e50dd.pdf"
+          href={PDF_URL}
           download
-          className="inline-flex items-center justify-center gap-2 w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-6 rounded-xl transition mb-6"
+          className="inline-flex items-center justify-center gap-2 w-full bg-[#e74c3c] hover:bg-[#c0392b] text-white font-semibold py-4 px-6 rounded-2xl transition mb-6"
         >
           <Download size={20} />
-          Télécharger votre PDF exclusif
+          TÉLÉCHARGER LE PDF
         </a>
 
-        <div className="text-left bg-muted/50 rounded-xl p-5 mb-6 space-y-2">
-          <p className="font-semibold text-foreground mb-3">En rejoignant cette communauté, vous bénéficiez de :</p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>💎 Accès à un groupe réservé</li>
-            <li>💎 Espace d'échange entre membres</li>
-            <li>💎 Environnement respectueux et modéré</li>
-            <li>💎 Confidentialité des échanges</li>
-            <li>💎 Accès aux contenus exclusifs de la communauté</li>
-          </ul>
-        </div>
+        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-5 text-left mb-6">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 shrink-0">
+              <AlertTriangle className="w-5 h-5 text-[#f59e0b]" />
+            </div>
+            <div>
+              <p className="font-semibold text-white mb-1">Vous utilisez TikTok ?</p>
+              <p className="text-sm text-[#9ca3af] leading-relaxed">
+                Le navigateur intégré de TikTok bloque parfois les téléchargements directs. Si le bouton ci-dessus ne fonctionne pas, copiez le lien ci-dessous et ouvrez-le dans un navigateur externe (Chrome, Safari, etc.).
+              </p>
+            </div>
+          </div>
 
-        <div className="text-left bg-muted/50 rounded-xl p-5 mb-6">
-          <p className="font-semibold text-foreground mb-3">Accédez à votre espace :</p>
-          <div className="space-y-2">
-            {[
-              { label: 'Groupe 1', url: 'https://t.me/+Rv1cijBoS0JlZWVk' },
-              { label: 'Groupe 2', url: 'https://t.me/+FD49U1RawrdlODE0' },
-              { label: 'Groupe 3', url: 'https://t.me/bizzichoco' },
-              { label: 'Groupe 4', url: 'https://t.me/+i3l4HqqVEH9mOTJk' },
-              { label: 'Groupe 5', url: 'https://t.me/dr_man_family_officiel' },
-              { label: 'Groupe 6', url: 'https://t.me/blacknutlovers' },
-            ].map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-brand-600 hover:text-brand-700 underline truncate"
-              >
-                {link.label}
-              </a>
-            ))}
+          <div className="flex items-center gap-2 mt-4">
+            <div className="flex-1 min-w-0 bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-3 py-2.5 text-sm text-[#9ca3af] truncate">
+              {PDF_URL}
+            </div>
+            <button
+              onClick={handleCopy}
+              className="inline-flex items-center gap-1.5 bg-[#1f1f1f] hover:bg-[#2a2a2a] border border-[#2a2a2a] text-white text-sm font-medium px-4 py-2.5 rounded-xl transition shrink-0"
+            >
+              <Copy size={16} />
+              {copied ? 'Copié' : 'Copier'}
+            </button>
           </div>
         </div>
 
-        <div className="text-left bg-muted/50 rounded-xl p-5 mb-6">
-          <p className="font-semibold text-foreground mb-3">Sites par pays :</p>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: '🇹🇬 Togo', url: 'https://www.exotictogo.com/' },
-              { label: '🇬🇭 Ghana', url: 'https://www.exoticghana.com/' },
-              { label: '🇧🇯 Bénin', url: 'https://www.exoticbenin.com/' },
-              { label: '🇸🇳 Sénégal', url: 'https://www.exoticsenegal.com/' },
-              { label: '🇨🇮 Côte d\'Ivoire', url: 'https://www.exoticivoire.com/' },
-              { label: '🇲🇱 Mali', url: 'https://www.exoticmali.com/' },
-              { label: '🇨🇩 RDC', url: 'https://www.exoticdrc.com/' },
-              { label: '🇨🇲 Cameroun', url: 'https://www.exoticcameroon.com/' },
-              { label: '🇬🇶 Guinée Éq.', url: 'https://www.exoticeq.com/' },
-              { label: '🇧🇫 Burkina Faso', url: 'https://www.exoticfaso.com/' },
-              { label: '🇳🇪 Niger', url: 'https://www.exoticniger.com/' },
-            ].map((site) => (
-              <a
-                key={site.url}
-                href={site.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-brand-600 hover:text-brand-700 underline"
-              >
-                {site.label}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-left text-sm text-amber-800">
-          <div className="flex items-center gap-2 font-semibold mb-2">
-            <Bookmark size={16} />
-            Important
-          </div>
-          <p className="mb-2">
-            Nous vous recommandons d'enregistrer cette page afin de conserver l'accès aux liens.
-          </p>
-          <p className="mb-1 font-medium">Si vous consultez depuis le navigateur TikTok :</p>
-          <ol className="list-decimal list-inside space-y-1 ml-1">
-            <li>Cliquez sur les trois points en haut à droite</li>
-            <li>Sélectionnez « Ouvrir dans le navigateur »</li>
-            <li>Ajoutez la page à vos favoris</li>
-          </ol>
-        </div>
+        <Link
+          to="/"
+          className="inline-flex items-center justify-center gap-2 w-full bg-transparent hover:bg-[#1a1a1a] border border-[#2a2a2a] text-white font-medium py-3.5 px-6 rounded-2xl transition"
+        >
+          <Home size={18} />
+          Retour à l'accueil
+        </Link>
       </div>
     </div>
   );
