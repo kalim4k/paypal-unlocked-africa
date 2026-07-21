@@ -26,7 +26,7 @@ const Pricing: React.FC = () => {
               <p className="text-muted-foreground mb-8">Accès immédiat et à vie à la formation complète.</p>
 
               <div className="flex items-end gap-4 mb-8">
-                <span className="text-5xl font-extrabold text-foreground">800 <span className="text-2xl font-bold text-muted-foreground">FCFA</span></span>
+                <span className="text-5xl font-extrabold text-foreground">1000 <span className="text-2xl font-bold text-muted-foreground">FCFA</span></span>
                 <span className="text-xl text-muted-foreground line-through mb-2">15.000 FCFA</span>
               </div>
 
