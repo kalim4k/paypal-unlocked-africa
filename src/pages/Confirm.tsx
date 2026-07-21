@@ -47,7 +47,7 @@ const Confirm: React.FC = () => {
         </p>
 
         <div className="flex items-end gap-4 justify-center mb-8">
-          <span className="text-4xl font-extrabold text-foreground">2.500 <span className="text-lg font-bold text-muted-foreground">FCFA</span></span>
+          <span className="text-4xl font-extrabold text-foreground">800 <span className="text-lg font-bold text-muted-foreground">FCFA</span></span>
         </div>
 
         {error && (
