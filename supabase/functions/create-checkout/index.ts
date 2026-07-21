@@ -30,8 +30,8 @@ serve(async (req) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        totalPrice: 800,
-        article: [{ Abonnement: 800 }],
+        totalPrice: 1000,
+        article: [{ Abonnement: 1000 }],
         personal_Info: [{ orderId: 'paypal-ebook' }],
         numeroSend: customerPhone,
         nomclient: customerName,
