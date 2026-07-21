@@ -23,7 +23,7 @@ serve(async (req) => {
       event_name = 'Purchase',
       event_id,
       event_source_url,
-      value = 2500,
+      value = 800,
       currency = 'XOF',
       email,
       fbp,

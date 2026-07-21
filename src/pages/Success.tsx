@@ -16,7 +16,7 @@ const Success: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const value = 2500;
+    const value = 800;
     const currency = 'XOF';
 
     // Stable event_id: from ?eid= (set by payment-callback for the real transaction).
